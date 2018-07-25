@@ -140,7 +140,7 @@ void State::FromLocal( const fs::path& p, Resource* folder, Val& tree )
 		else
 		{
 			// Restore state of locally deleted files
-			Resource *c = folder->FindChild( i->first ), *c2 ;
+			Resource *c = folder->FindChild( i->first ), *c2 = c ;
 			if ( !c )
 			{
 				c2 = new Resource( i->first, i->second.Has( "tree" ) ? "folder" : "file" ) ;
@@ -162,7 +162,9 @@ void State::FromRemote( const Entry& e )
 	std::string k = e.IsDir() ? "folder" : "file";
 
 	// common checkings
-	if ( !e.IsDir() && ( fn.empty() || e.ContentSrc().empty() ) )
+	if ( IsIgnore( e.Name() ) )
+			Log( "file %1% is ignored by griveignore", e.Name(), log::verbose ) ;
+	else if ( !e.IsDir() && ( fn.empty() || e.ContentSrc().empty() ) )
 		Log( "%1% \"%2%\" is a google document, ignored", k, e.Name(), log::verbose ) ;
 	
 	else if ( fn.find('/') != fn.npos )
